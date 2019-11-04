@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:orientation="vertical"
+    android:padding="2dp">
+
+
+    <TextView
+        android:id="@+id/textNewScroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:text="Select Image"
+        android:textColor="@color/midnightBlue"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+</LinearLayout>
