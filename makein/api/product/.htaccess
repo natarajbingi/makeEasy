@@ -1,0 +1,5 @@
+RewriteEngine On    # Turn on the rewriting engine
+RewriteRule ^prodreq productReqs.php [NC,L]
+RewriteRule ^subprodreq subprodreq.php [NC,L]
+RewriteRule ^userreq userreq.php [NC,L]
+RewriteRule ^userprodreq userprodreq.php [NC,L]
