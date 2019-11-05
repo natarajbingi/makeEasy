@@ -7,25 +7,6 @@
     android:orientation="vertical"
     tools:context=".activities.RequestsActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/request_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/toolarHead"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Home"
-                android:textColor="@color/white"
-                android:textSize="19sp"
-                android:textStyle="bold" />
-        </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
         android:id="@+id/noDataVala"
@@ -80,10 +61,55 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/midnightBlue"
+                        android:padding="5dp"
+                        android:text="Select Profile Pic"
+                        android:textColor="@color/white" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/line" />
+
+                    <LinearLayout
+                        android:id="@+id/take_img_sub"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:id="@+id/selectedImg"
+                            android:layout_width="0dp"
+                            android:layout_height="85dp"
+                            android:layout_margin="5dp"
+                            android:layout_weight="0.7"
+                            android:src="@drawable/ic_person"
+                            android:tintMode="@color/colorPrimary"
+                            app:civ_border_color="@color/colorPrimary"
+                            app:civ_border_width="1dp" />
+                        <!--Capture / -->
+                        <ImageView
+                            android:id="@+id/triggImgGet"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="0.3"
+                            android:background="@color/background_one_"
+                            android:padding="10dp"
+                            android:src="@drawable/add_a_photo" />
+
+
+                    </LinearLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:background="@color/midnightBlue"
                         android:padding="5dp"
-                        android:text="Details For SignUp"
+                        android:text="Profile Details"
                         android:textColor="@color/white" />
 
                     <LinearLayout
@@ -204,9 +230,9 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
                         android:background="@color/midnightBlue"
                         android:padding="5dp"
-                        android:layout_marginTop="5dp"
                         android:text="Address Details"
                         android:textColor="@color/white" />
 
@@ -280,50 +306,6 @@
                     </LinearLayout>
 
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/midnightBlue"
-                        android:padding="5dp"
-                        android:layout_marginTop="5dp"
-                        android:text="Select Profile Pic"
-                        android:textColor="@color/white" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginTop="5dp"
-                        android:background="@color/line" />
-                    <LinearLayout
-                        android:id="@+id/take_img_sub"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:orientation="horizontal">
-
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:id="@+id/selectedImg"
-                            android:layout_width="0dp"
-                            android:layout_height="85dp"
-                            android:layout_margin="5dp"
-                            android:layout_weight="0.7"
-                            android:src="@drawable/ic_person"
-                            android:tintMode="@color/colorPrimary"
-                            app:civ_border_color="@color/colorPrimary"
-                            app:civ_border_width="1dp" />
-                        <!--Capture / -->
-                        <ImageView
-                            android:id="@+id/triggImgGet"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_weight="0.3"
-                            android:background="@color/background_one_"
-                            android:padding="10dp"
-                            android:src="@drawable/add_a_photo" />
-
-
-                    </LinearLayout>
 
                     <TextView
                         android:layout_width="match_parent"

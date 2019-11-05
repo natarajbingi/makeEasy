@@ -182,7 +182,7 @@ if (isset($_GET['apicall'])) {
         case seven:
             $upload = new FileHandler();
             $file = "";
-            $exten = "";
+            $exten = "000";
             if (isset($_FILES['image']['name']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
                 $file = $_FILES['image']['tmp_name'];
                 $exten = getFileExtension($_FILES['image']['name']);
@@ -199,30 +199,26 @@ if (isset($_GET['apicall'])) {
             $mobile_no = $_POST["mobile_no"];
             $pincode = $_POST["pincode"];
             $createdby = $_POST["createdby"];
-            if ($upload->saveUserRegister($file, $exten, $first_name, $last_name, $gender, $dob, $email_id, $passwd, $address_one
-                , $address_two, $Landmark, $pincode, $mobile_no, $createdby)) {
+            $rs = $upload->saveUserRegister($file, $exten, $first_name, $last_name, $gender, $dob, $email_id, $passwd, $address_one
+                , $address_two, $Landmark, $pincode, $mobile_no, $createdby);
+            if ($rs == 200) {
                 $response['error'] = false;
-                $response['message'] = 'User Registered successfully';
+                $response['message'] = 'User Registered successfully ';
+                $response['data'] = null;
             } else {
                 $response['error'] = true;
-                $response['message'] = 'failed , please try again.';
+                $response['data'] = null;
+                $rs == 101 ? $msg = 'User EmailID and Mobile no already exists, Please try again.' : $msg = 'failed , please try again.';
+                $response['message'] = $msg;
             }
             break;
         /*8 userupdate*/
         case eight:
             $upload = new FileHandler();
-            $file = "";
-            $exten = "";
-            if (isset($_FILES['image']['name']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-                $file = $_FILES['image']['tmp_name'];
-                $exten = getFileExtension($_FILES['image']['name']);
-            }
             $first_name = $_POST["first_name"];
             $last_name = $_POST["last_name"];
             $gender = $_POST["gender"];
             $id = $_POST["id"];
-            // $email_id = $_POST["email_id"];
-            //            $passwd = $_POST["passwd"];
             $address_one = $_POST["address_one"];
             $dob = $_POST["dob"];
             $address_two = $_POST["address_two"];
@@ -230,9 +226,12 @@ if (isset($_GET['apicall'])) {
             $mobile_no = $_POST["mobile_no"];
             $pincode = $_POST["pincode"];
             $createdby = $_POST["createdby"];
-            if ($upload->updateUserRegister($file, $exten, $first_name, $last_name, $gender, $dob, $address_one
+            if ($upload->updateUserRegister($first_name, $last_name, $gender, $dob, $address_one
                 , $address_two, $Landmark, $pincode, $mobile_no, $id, false, $createdby)) {
                 $response['error'] = false;
+                $rsMe = array();
+                $rsMe['id']=$id;
+                $response['data'] = setuserMe($rsMe);
                 $response['message'] = 'User updated successfully';
             } else {
                 $response['error'] = true;
@@ -250,9 +249,10 @@ if (isset($_GET['apicall'])) {
             }
             $id = $_POST["id"];
             $createdby = $_POST["createdby"];
-            if ($upload->updateUserProfPic($file, $exten, $id, $createdby)) {
+            $rs = $upload->updateUserProfPic($file, $exten, $id, $createdby);
+            if ($rs != "") {
                 $response['error'] = false;
-                $response['message'] = 'User updated successfully';
+                $response['message'] = 'User Profile Pic updated successfully -' . $rs;
             } else {
                 $response['error'] = true;
                 $response['message'] = 'failed , please try again.';
@@ -267,7 +267,7 @@ if (isset($_GET['apicall'])) {
             $createdby = $_POST["createdby"];
             if ($upload->updateUserPassword($email_id, $pwd, $id, $createdby)) {
                 $response['error'] = false;
-                $response['message'] = 'User updated successfully';
+                $response['message'] = 'User Password  updated successfully, Please Re-Login with new Credentials.';
             } else {
                 $response['error'] = true;
                 $response['message'] = 'failed , please try again.';
@@ -276,8 +276,6 @@ if (isset($_GET['apicall'])) {
         /*9 userdelete*/
         case nine:
             $upload = new FileHandler();
-            $file = "";
-            $exten = "";
             $first_name = "";
             $last_name = "";
             $gender = "";
@@ -290,8 +288,8 @@ if (isset($_GET['apicall'])) {
             $createdby = $_POST["createdby"];
             // $email_id = $_POST["email_id"];
             // $passwd = $_POST["passwd"];
-            if ($upload->updateUserRegister($file, $exten, $first_name, $last_name, $gender, $address_one
-                , $address_two, $Landmark, $pincode, $mobile_no, $id, false, $createdby)) {
+            if ($upload->updateUserRegister("", "", "", ""
+                , "", "", "", "", $id, true, $createdby)) {
                 $response['error'] = false;
                 $response['message'] = 'User Deleted successfully';
             } else {
@@ -396,14 +394,21 @@ if (isset($_GET['apicall'])) {
             $createdby = $_POST["createdby"];
             // $email_id = $_POST["email_id"];
             // $passwd = $_POST["passwd"];
-            if ($upload->updateUserRegister($file, $exten, $first_name, $last_name, $gender, $address_one
-                , $address_two, $Landmark, $pincode, $mobile_no, $id, false, $createdby)) {
-                $response['error'] = false;
-                $response['message'] = 'User Deleted successfully';
-            } else {
-                $response['error'] = true;
-                $response['message'] = 'failed , please try again.';
-            }
+
+            break;
+
+
+        /*15 getAllProdReqs todo*/
+        case getAllProdReqs:
+
+            $upload = new FileHandler();
+            $user_id = $_POST["user_id"];
+            $deli_status = $_POST["deli_status"];
+            $res = $upload->getAllProdReqs($user_id, $deli_status);
+            $response['error'] = !count($res) > 0;
+            $response['data'] = $res;
+            $response['message'] = count($res) > 0 ? "User requests details " : "No User requests added  yet.";
+
             break;
         /*15 userprodreqgetll todo*/
         case userprodreqgetll:
@@ -413,14 +418,7 @@ if (isset($_GET['apicall'])) {
             $user_id = $_POST["user_id"];
             // $email_id = $_POST["email_id"];
             // $passwd = $_POST["passwd"];
-            if ($upload->updateUserRegister($file, $exten, $first_name, $last_name, $gender, $address_one
-                , $address_two, $Landmark, $pincode, $mobile_no, $id, false, $createdby)) {
-                $response['error'] = false;
-                $response['message'] = 'User Deleted successfully';
-            } else {
-                $response['error'] = true;
-                $response['message'] = 'failed , please try again.';
-            }
+
             break;
 
         /* Login handle*/
@@ -441,6 +439,8 @@ function setuserMe($POST)
         $res = $upload->getAllUsers($POST["username"], $_POST['pwd']);
     } else if (isset($POST['getAllUsers'])) {
         $res = $upload->getAllUsers("", "");
+    } else if (isset($POST['id'])) {
+        $res = $upload->getAllUsers("0", $POST['id']);
     } else {
         return "";
     }

@@ -12,6 +12,7 @@
     <string name="menu_category">Add Category</string>
     <string name="menu_sub_category">Add Sub Category</string>
     <string name="menu_change_pass">Change Password</string>
+    <string name="menu_profile">Profile</string>
     <string name="menu_logout">Logout </string>
     <string name="menu_requests">Requests</string>
     <string name="menu_send">Send</string>
