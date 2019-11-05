@@ -29,6 +29,7 @@ define('onetwo', 'getallusers');
 define('onethree', 'userprodreq');
 define('onefour', 'userprodrequpdate');
 define('onefive', 'userprodreqdelete');
+define('getAllProdReqs', 'getAllProdReqs');
 define('userprodreqgetll', 'userprodreqgetll');
 define('onesix', 'login');
 define('oneseven', 'getallusers');

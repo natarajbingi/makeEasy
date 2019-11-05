@@ -78,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             userId.setError(null);
             if (remember.isChecked()) {
-                Sessions.setUserObject(context, userIdStr, Controller.userId);
+                Sessions.setUserObject(context, userIdStr, Controller.userID);
             }
         }
 
@@ -104,10 +104,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             keepMeSignedStr = remember.isChecked();
             Login(userIdStr, passwordStr);
-            /*if (remember.isChecked()) {
-                Toast.makeText(context, "UserID: " + Sessions.getUserObject(context, Controller.userId)
-                        + " Password: " + Sessions.getUserObject(context, Controller.password), Toast.LENGTH_LONG).show();
-            }*/
+
         }
 
         login.setEnabled(false);
@@ -143,19 +140,25 @@ public class LoginActivity extends AppCompatActivity {
                 Controller.logPrint(call.request().toString(), null, response.body());
                 assert response.body() != null;
                 if (!response.body().error) {
-                    Sessions.setUserObject(context, response.body().data.get(0).id + "", Controller.userID);
-                    Sessions.setUserObject(context, response.body().data.get(0).email_id + "", Controller.emailID);
-                    Sessions.setUserObject(context, response.body().data.get(0).first_name + " " + response.body().data.get(0).last_name + "", Controller.name);
-                    Sessions.setUserObject(context, response.body().data.get(0).address_one + ", " + response.body().data.get(0).address_two + ", " + response.body().data.get(0).Landmark + "" + response.body().data.get(0).pincode, Controller.Address);
+                    if (response.body().data.get(0).createdby.equals("ADMIN")) {
+                        Sessions.setUserObject(context, response.body().data.get(0).id + "", Controller.userID);
+                        Sessions.setUserObject(context, response.body().data.get(0).email_id + "", Controller.emailID);
+                        Sessions.setUserObject(context, response.body().data.get(0).profile_img + "", Controller.profile_img);
+                        Sessions.setUserObject(context, response.body().data.get(0).first_name + " " + response.body().data.get(0).last_name + "", Controller.name);
+                        Sessions.setUserObject(context, response.body().data.get(0).address_one + ", " + response.body().data.get(0).address_two + ", " + response.body().data.get(0).Landmark + "" + response.body().data.get(0).pincode, Controller.Address);
+                        Sessions.setUserObj(context, response.body(), Controller.LoginRes);
 
-                    LoginSuccess();
-                    if (keepMeSignedStr) {
-                        Sessions.setUserObject(context, "TRUE", Controller.keepMeSignedStr);
+                        LoginSuccess();
+                        if (keepMeSignedStr) {
+                            Sessions.setUserObject(context, "TRUE", Controller.keepMeSignedStr);
+                        } else {
+                            Sessions.setUserObject(context, "FALSE", Controller.keepMeSignedStr);
+                        }
                     } else {
-                        Sessions.setUserObject(context, "FALSE", Controller.keepMeSignedStr);
+                        Controller.Toasty(context, "Admin Credentials are wrong, Please try again.");
                     }
                 } else {
-                    Controller.Toasty(context, "Some error occurred...");
+                    Controller.Toasty(context, "Something went wrong server side...");
                 }
             }
 
@@ -164,7 +167,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (dialog.isShowing()) {
                     dialog.dismiss();
                 }
-                Controller.Toasty(context, t.getMessage());
+                Controller.Toasty(context, "Something went wrong , Please check network connection.");
                 Log.d("Error", t.getMessage());
                 login.setEnabled(true);
             }

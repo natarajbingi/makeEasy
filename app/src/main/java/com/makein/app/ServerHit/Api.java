@@ -62,14 +62,29 @@ public interface Api {
                                   @Part("Landmark") RequestBody Landmark,
                                   @Part("mobile_no") RequestBody mobile_no,
                                   @Part("pincode") RequestBody pincode,
-                                  @Part("created_by") RequestBody created_by
+                                  @Part("createdby") RequestBody created_by
+    );
+
+    @Multipart
+    @POST("apis.php?apicall=userupdate")
+    Call<LoginRes> userupdate(@Part("first_name") RequestBody first_name,
+                                @Part("last_name") RequestBody last_name,
+                                @Part("gender") RequestBody gender,
+                                @Part("id") RequestBody id,
+                                @Part("dob") RequestBody dob,
+                                @Part("address_one") RequestBody address_one,
+                                @Part("address_two") RequestBody address_two,
+                                @Part("Landmark") RequestBody Landmark,
+                                @Part("mobile_no") RequestBody mobile_no,
+                                @Part("pincode") RequestBody pincode,
+                                @Part("createdby") RequestBody createdby
     );
 
     @Multipart
     @POST("apis.php?apicall=userprofpicupdate")
     Call<MyResponse> userprofpicupdate(@Part("image\"; filename=\"myfile.jpg\" ") RequestBody file,
                                        @Part("id") RequestBody id,
-                                       @Part("created_by") RequestBody created_by
+                                       @Part("createdby") RequestBody created_by
     );
 
     @Multipart
@@ -77,7 +92,7 @@ public interface Api {
     Call<MyResponse> updateuserpas(@Part("id") RequestBody id,
                                    @Part("pwd") RequestBody pwd,
                                    @Part("email_id") RequestBody email_id,
-                                   @Part("created_by") RequestBody created_by
+                                   @Part("createdby") RequestBody created_by
     );
 
     @Multipart

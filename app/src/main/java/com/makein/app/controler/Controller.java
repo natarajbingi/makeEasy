@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Base64;
@@ -25,11 +27,6 @@ import com.makein.app.Models.MyResponse;
 import com.makein.app.R;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.URI;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,12 +37,14 @@ import static android.Manifest.permission.READ_PHONE_STATE;
 
 public class Controller extends Application {
 
-    public static final String userId = "userId";
+//    public static final String userId = "userId";
     public static final String password = "password";
     public static final String userID = "userID";
     public static final String emailID = "emailID";
     public static final String name = "name";
     public static final String Address = "Address";
+    public static final String profile_img = "profile_img";
+    public static final String LoginRes = "LoginRes";
     public static final String keepMeSignedStr = "keepMeSignedStr";
     public static final String Categories = "Categories";
 
@@ -65,6 +64,24 @@ public class Controller extends Application {
         Toast.makeText(c, Msg, Toast.LENGTH_LONG).show();
     }
 
+    public static boolean isOnline(Context context) {
+        final ConnectivityManager connMgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetworkInfo = connMgr.getActiveNetworkInfo();
+
+        if (activeNetworkInfo != null) { // connected to the internet
+            //Toast.makeText(context, activeNetworkInfo.getTypeName(), Toast.LENGTH_SHORT).show();
+
+            if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                // connected to wifi
+                return true;
+            } else if (activeNetworkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+                // connected to the mobile provider's data plan
+                return true;
+            }
+        }
+        return false;
+    }
     public static void logPrint(String call, Object req, Object res) {
         Gson g = new Gson();
         if (call != null)

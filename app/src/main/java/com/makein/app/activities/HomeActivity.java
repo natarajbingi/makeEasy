@@ -12,13 +12,16 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.view.MenuItem;
 
 import com.google.android.material.navigation.NavigationView;
+import com.makein.app.controler.BitmapTransform;
 import com.makein.app.fragments.AddCategoryFragment;
 import com.makein.app.fragments.AddSubCategoryFragment;
+import com.makein.app.fragments.ChangePwsFragment;
 import com.makein.app.fragments.HomeFragment;
 import com.makein.app.R;
 import com.makein.app.controler.Controller;
 import com.makein.app.controler.Sessions;
 import com.makein.app.fragments.SubCategoryFragment;
+import com.squareup.picasso.Picasso;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -29,6 +32,7 @@ import androidx.fragment.app.FragmentManager;
 
 import android.view.Menu;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class HomeActivity extends AppCompatActivity
@@ -59,10 +63,27 @@ public class HomeActivity extends AppCompatActivity
 
         TextView leftMenuName = (TextView) hView.findViewById(R.id.leftMenuName);
         TextView leftMenuDesc = (TextView) hView.findViewById(R.id.leftMenuDesc);
+        ImageView imageView = (ImageView) hView.findViewById(R.id.imageView);
 
         leftMenuName.setText(Sessions.getUserObject(context, Controller.name));
         leftMenuDesc.setText(Sessions.getUserObject(context, Controller.emailID));
 
+
+        try {
+            int size = (int) Math.ceil(Math.sqrt(800 * 600));
+            // Loads given image
+            Picasso.get()
+                    .load(Sessions.getUserObject(context, Controller.profile_img))
+                    .transform(new BitmapTransform(800, 600))
+                    .resize(size, size)
+                    .centerInside()
+                    // .noPlaceholder()
+                    .placeholder(R.drawable.loader)
+                    .error(R.drawable.load_failed)
+                    .into(imageView);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         callHomeFrag();
     }
 
@@ -127,8 +148,13 @@ public class HomeActivity extends AppCompatActivity
             }
             break;
             case R.id.nav_chng_pass: {
-                Intent intent = new Intent(HomeActivity.this, ChangePassword.class);
-                startActivity(intent);
+                toolbar.setTitle("Profile");
+                if (fragmentClass != ChangePwsFragment.class) {
+                    fragmentClass = ChangePwsFragment.class;
+                    SetFrag(fragmentClass);
+                }
+//                Intent intent = new Intent(HomeActivity.this, ChangePassword.class);
+//                startActivity(intent);
 
             }
             break;

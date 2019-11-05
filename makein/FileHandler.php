@@ -80,15 +80,15 @@ class FileHandler
     public function updateProd($file, $extension, $name, $description, $id, $del, $created_by)
     {
         if ($del) {// deleting product
-            $empQuery = "UPDATE `product_category` SET  `status`='0', `created_by`='$created_by', `updated_datetime`='NOW()'  WHERE `id`='$id'";
+            $empQuery = "UPDATE `product_category` SET  `status`='0', `created_by`='$created_by', `updated_datetime`=NOW()  WHERE `id`='$id'";
         } else if ($file != "") {// updating  product with image
             $img_url = "prodUpdated" . round(microtime(true) * 1000) . '.' . $extension;
             $filedest = dirname(__FILE__) . UPLOAD_PATH . $img_url;
             move_uploaded_file($file, $filedest);
             $url = $server_ip = gethostbyname(gethostname());
-            $empQuery = "UPDATE `product_category` SET `name`='$name',`description`='$description',`created_by`='$created_by', `updated_datetime`='NOW()',`img_url`='$img_url' WHERE `id`='$id'";
+            $empQuery = "UPDATE `product_category` SET `name`='$name',`description`='$description',`created_by`='$created_by', `updated_datetime`=NOW(),`img_url`='$img_url' WHERE `id`='$id'";
         } else {// updating  product withOut image
-            $empQuery = "UPDATE `product_category` SET `name`='$name',`description`='$description',`created_by`='$created_by', `updated_datetime`='NOW()'  WHERE `id`='$id'";
+            $empQuery = "UPDATE `product_category` SET `name`='$name',`description`='$description',`created_by`='$created_by', `updated_datetime`=NOW()  WHERE `id`='$id'";
         }
         if (mysqli_query($this->con, $empQuery))
             return true;
@@ -125,7 +125,7 @@ class FileHandler
     public function updateSubProd($file, $extension, $name, $description, $pur_cost, $sell_cost, $id, $del, $created_by)
     {
         if ($del) {// deleting sub product
-            $empQuery = "UPDATE `product_subcategory` SET  `status`='0', `created_by`='$created_by', `updated_datetime`='NOW()'  WHERE `id`='$id'";
+            $empQuery = "UPDATE `product_subcategory` SET  `status`='0', `created_by`='$created_by', `updated_datetime`=NOW()  WHERE `id`='$id'";
         } else if ($file != "") { // updating sub product with image
             $img_url = "subprodUpdated" . round(microtime(true) * 1000) . '.' . $extension;
             $filedest = dirname(__FILE__) . UPLOAD_PATH . $img_url;
@@ -141,9 +141,9 @@ class FileHandler
                 // $_id = $me[1];
                 //  $empQuery = "UPDATE `product_subcategory` SET  `img_urls`='$img_urls'  WHERE `id`='$_id'";
             }
-            $empQuery = "UPDATE `product_subcategory` SET  `name`='$name',`description`='$description',`img_urls`='$img_urls',`pur_cost`='$pur_cost',`sell_cost`='$sell_cost', `createdby`='$created_by', `updated_datetime`='NOW()' WHERE `id`='$id'";
+            $empQuery = "UPDATE `product_subcategory` SET  `name`='$name',`description`='$description',`img_urls`='$img_urls',`pur_cost`='$pur_cost',`sell_cost`='$sell_cost', `createdby`='$created_by', `updated_datetime`=NOW() WHERE `id`='$id'";
         } else {// updating  sub product withOut image
-            $empQuery = "UPDATE `product_subcategory` SET  `name`='$name',`description`='$description', `pur_cost`='$pur_cost',`sell_cost`='$sell_cost', `createdby`='$created_by', `updated_datetime`='NOW()' WHERE `id`='$id'";
+            $empQuery = "UPDATE `product_subcategory` SET  `name`='$name',`description`='$description', `pur_cost`='$pur_cost',`sell_cost`='$sell_cost', `createdby`='$created_by', `updated_datetime`=NOW() WHERE `id`='$id'";
         }
 
         if (mysqli_query($this->con, $empQuery))
@@ -155,7 +155,7 @@ class FileHandler
         , $address_two, $Landmark, $pincode, $mobile_no, $createdby)
     {
         if ($this->getExistUser($email_id, $mobile_no)) {
-            return false;
+            return 101;
         }
         $profile_img = "";
         if ($file != "") {
@@ -165,12 +165,12 @@ class FileHandler
             $url = $server_ip = gethostbyname(gethostname());
         }
         $empQuery = "INSERT INTO `users`(  `first_name`, `last_name`, `gender`,`dob`, `email_id`, `passwd`, `address_one`, `address_two`, `Landmark`, `pincode`, `mobile_no`, `createdby`, `status`, `created_datetime`, `updated_datetime`, `profile_img`)" .
-            "VALUES ( '$first_name','$last_name','$gender','$dob','$email_id','$passwd','$address_one','$address_two', '$Landmark','$pincode','$mobile_no','$createdby','1','NOW()','','$profile_img')";
+            "VALUES ( '$first_name','$last_name','$gender','$dob','$email_id','$passwd','$address_one','$address_two', '$Landmark','$pincode','$mobile_no','$createdby','1',NOW(),'','$profile_img')";
 
 
         if (mysqli_query($this->con, $empQuery))
-            return true;
-        return false;
+            return 200;
+        return 102;
     }
 
     public function saveUserProdReq($user_id, $prod_id, $prod_subid, $quantity, $sell_cost, $delivery_address, $deli_status)
@@ -220,20 +220,13 @@ class FileHandler
     }
 
 
-    public function updateUserRegister($file, $extension, $first_name, $last_name, $gender, $dob, $address_one,
+    public function updateUserRegister( $first_name, $last_name, $gender, $dob, $address_one,
                                        $address_two, $Landmark, $pincode, $mobile_no, $id, $del, $createdby)
     {
-        $profile_img = "";
         if ($del) {// deleting User
-            $empQuery = "UPDATE `users` SET  `status`='0', `createdby`='$createdby', `updated_datetime`='NOW()'  WHERE  `id`='$id'";
-        } else if ($file != "") {
-            $profile_img = "profileUpdated" . round(microtime(true) * 1000) . '.' . $extension;
-            $filedest = dirname(__FILE__) . UPLOAD_PATH . $profile_img;
-            move_uploaded_file($file, $filedest);
-            $url = $server_ip = gethostbyname(gethostname());
-            $empQuery = "UPDATE `users` SET `first_name`='$first_name',`last_name`='$last_name',`gender`='$gender',`dob`='$dob', `address_one`='$address_one', `address_two`='$address_two',`Landmark`='$Landmark' ,`pincode`='$pincode',`mobile_no`='$mobile_no',`createdby`='$createdby', `updated_datetime`='NOW()',`profile_img`='$profile_img' WHERE `id`='$id'";
-        } else {
-            $empQuery = "UPDATE `users` SET `first_name`='$first_name',`last_name`='$last_name',`gender`='$gender',`dob`='$dob',  `address_one`='$address_one', `address_two`='$address_two',`Landmark`='$Landmark' ,`pincode`='$pincode',`mobile_no`='$mobile_no',`createdby`='$createdby', `updated_datetime`='NOW()'  WHERE `id`='$id'";
+            $empQuery = "UPDATE `users` SET  `status`='0', `createdby`='$createdby', `updated_datetime`=NOW()  WHERE  `id`='$id'";
+        }   else {
+            $empQuery = "UPDATE `users` SET `first_name`='$first_name',`last_name`='$last_name',`gender`='$gender',`dob`='$dob',  `address_one`='$address_one', `address_two`='$address_two',`Landmark`='$Landmark' ,`pincode`='$pincode',`mobile_no`='$mobile_no',`createdby`='$createdby', `updated_datetime`=NOW()  WHERE `id`='$id'";
         }
 
         if (mysqli_query($this->con, $empQuery))
@@ -251,16 +244,16 @@ class FileHandler
             $url = $server_ip = gethostbyname(gethostname());
             $empQuery = "UPDATE `users` SET  `createdby`='$createdby', `updated_datetime`=NOW(),`profile_img`='$profile_img' WHERE `id`='$id'";
         }
-
+        $absurl = 'http://' . gethostbyname(gethostname()) . '/makein' . UPLOAD_PATH . $profile_img;
         if (mysqli_query($this->con, $empQuery))
-            return true;
-        return false;
+            return $absurl;
+        return "";
     }
 
     public function updateUserPassword($email_id, $pwd, $id, $createdby)
     {
 
-        $empQuery = "UPDATE `users` SET  `createdby`='$createdby', `updated_datetime`=NOW(), `passwd`='$pwd' WHERE `id`='$id' and `email_id`=$email_id";
+        $empQuery = "UPDATE `users` SET  `createdby`='$createdby', `updated_datetime`=NOW(), `passwd`='$pwd' WHERE `id`='$id' and `email_id`='$email_id' ";
 
         if (mysqli_query($this->con, $empQuery))
             return true;
@@ -353,13 +346,15 @@ class FileHandler
     public function getAllUsers($username, $pwd)
     {
         if ($username == "")
-            $qry = "SELECT id, first_name, last_name, gender, email_id, passwd, address_one, address_two, Landmark, pincode, mobile_no, createdby,  created_datetime, updated_datetime, profile_img  FROM users WHERE status=1 ORDER BY id DESC";
+            $qry = "SELECT id, first_name, last_name, gender, email_id, passwd, dob,address_one, address_two, Landmark, pincode, mobile_no, createdby,  created_datetime, updated_datetime, profile_img  FROM users WHERE status=1 AND createdby != 'ADMIN' ORDER BY id DESC";
+        else if ($username == "0")
+            $qry = "SELECT id, first_name, last_name, gender, email_id, passwd, dob,address_one, address_two, Landmark, pincode, mobile_no, createdby,  created_datetime, updated_datetime, profile_img  FROM users WHERE status=1 AND id = $pwd  ORDER BY id DESC";
         else
-            $qry = "SELECT id, first_name, last_name, gender, email_id, passwd, address_one, address_two, Landmark, pincode, mobile_no, createdby,  created_datetime, updated_datetime, profile_img  FROM users WHERE status=1 and email_id = '$username' and passwd = '$pwd'  ORDER BY id DESC";
+            $qry = "SELECT id, first_name, last_name, gender, email_id, passwd,dob, address_one, address_two, Landmark, pincode, mobile_no, createdby,  created_datetime, updated_datetime, profile_img  FROM users WHERE status=1 and email_id = '$username' and passwd = '$pwd'  ORDER BY id DESC";
 
         $stmt = $this->con->prepare($qry);
         $stmt->execute();
-        $stmt->bind_result($id, $first_name, $last_name, $gender, $email_id, $passwd, $address_one, $address_two, $Landmark, $pincode, $mobile_no, $createdby, $created_datetime, $updated_datetime, $profile_img);
+        $stmt->bind_result($id, $first_name, $last_name, $gender, $email_id, $passwd, $dob, $address_one, $address_two, $Landmark, $pincode, $mobile_no, $createdby, $created_datetime, $updated_datetime, $profile_img);
         $profile = array();
         while ($stmt->fetch()) {
             $temp = array();
@@ -371,6 +366,7 @@ class FileHandler
             $temp['gender'] = $gender;
             $temp['email_id'] = $email_id;
             $temp['gender'] = $gender;
+            $temp['dob'] = $dob;
             $temp['address_one'] = $address_one;
             $temp['address_two'] = $address_two;
             $temp['Landmark'] = $Landmark;
@@ -419,8 +415,12 @@ class FileHandler
         return $suProds;
     }
 
-    public function getAllProdReqs($usr_id)
+    public function getAllProdReqs($usr_id, $deli_status)
     {
+        $deli_req = "";
+        if ($deli_status != "") {
+            $deli_req = " and ureq.`deli_status`='$deli_status' ";
+        }
         if ($usr_id == 0)
             $qry = "SELECT ureq.`id`, ureq.`invoice_no`,  
 
@@ -434,7 +434,7 @@ class FileHandler
                     `user_prod_reqs` ureq ,  users usr ,   product_category pcr,   product_subcategory pscr 
                     
                     WHERE ureq.`user_id`=usr.id AND  ureq.`prod_id`=pcr.id AND  ureq.`prod_subid`=pscr.id and  ureq.`status`=1 
-                    ORDER BY ureq.id DESC `status`=1  ORDER BY id DESC";
+                   $deli_req ORDER BY ureq.id DESC  ";
         else
             $qry = "SELECT ureq.`id`, ureq.`invoice_no`,  
 
@@ -448,31 +448,40 @@ class FileHandler
                     `user_prod_reqs` ureq ,  users usr ,  product_category pcr,  product_subcategory pscr 
                     
                     WHERE ureq.`user_id`='$usr_id' AND  ureq.`prod_id`=pcr.id AND  ureq.`prod_subid`=pscr.id and  ureq.`status`=1 
-                    ORDER BY ureq.id DESC";
+                  $deli_req  ORDER BY ureq.id DESC";
 
         $stmt1 = $this->con->prepare($qry);
         $stmt1->execute();
-        $stmt1->bind_result($id, $name, $description, $prod_id, $img_urls, $pur_cost, $sell_cost, $createdby, $created_datetime, $updated_datetime);
-
-        $suProds = array();
-
+        $stmt1->bind_result($id, $invoice_no, $prodid, $prodName, $quantity, $SpCid,
+            $SpCName, $img_urls, $userId, $usrName, $gender, $mobile_no, $sell_cost, $delivery_address, $status, $deli_status,
+            $comment, $created_datetime, $updated_datetime);
+        $ProdReqs = array();
         while ($stmt1->fetch()) {
 
             $temp = array();
             $temp['id'] = $id;
-            $temp['name'] = $name;
-            $temp['description'] = $description;
-            $temp['prod_id'] = $prod_id;
-            $temp['img_urls'] = $this->splitImgs($img_urls);
-            $temp['pur_cost'] = $pur_cost;
+            $temp['invoice_no'] = $invoice_no;
+            $temp['prodid'] = $prodid;
+            $temp['prodName'] = $prodName;
+            $temp['quantity'] = $quantity;
+            $temp['SubProdCatId'] = $SpCid;
+            $temp['SubProdCatName'] = $SpCName;
+            $temp['img_urls'] = $this->splitImgs($img_urls);;
+            $temp['userId'] = $userId;
+            $temp['usrName'] = $usrName;
+            $temp['gender'] = $gender;
+            $temp['mobile_no'] = $mobile_no;
             $temp['sell_cost'] = $sell_cost;
-            $temp['createdby'] = $createdby;
+            $temp['delivery_address'] = $delivery_address;
+            $temp['status'] = $status;
+            $temp['deli_status'] = $deli_status;
+            $temp['comment'] = $comment;
             $temp['created_datetime'] = $created_datetime;
             $temp['updated_datetime'] = $updated_datetime;
-            array_push($suProds, $temp);
+            array_push($ProdReqs, $temp);
         }
 
-        return $suProds;
+        return $ProdReqs;
     }
 
     public function splitImgs($img_urls)

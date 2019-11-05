@@ -14,6 +14,7 @@ public class LoginRes {
        public String last_name;
        public String profile_img;
        public String gender;
+       public String dob;
        public String email_id;
        public String address_one;
        public String address_two;

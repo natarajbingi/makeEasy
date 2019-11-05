@@ -12,9 +12,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +32,7 @@ import com.makein.app.R;
 import com.makein.app.ServerHit.Api;
 import com.makein.app.ServerHit.RetroCall;
 import com.makein.app.controler.Controller;
+import com.makein.app.controler.Sessions;
 
 import java.io.File;
 
@@ -40,7 +44,7 @@ import retrofit2.Response;
 
 public class RequestsActivity extends AppCompatActivity {
 
-    Toolbar toolbar;
+//    Toolbar toolbar;
     Context context;
     EditText first_name, last_name, dateofbirth, email_id, mobile_no, addr_one, addr_two, landmark, pincode;
     Spinner gender_list;
@@ -54,20 +58,22 @@ public class RequestsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_requests);
         context = RequestsActivity.this;
-        toolbar = findViewById(R.id.request_toolbar);
-        toolbar.setTitle("Requests");
-        toolbar.setTitleTextColor(Color.WHITE);
-        setSupportActionBar(toolbar);
+//        toolbar = findViewById(R.id.request_toolbar);
+//        toolbar.setTitle("Requests");
+//        toolbar.setTitleTextColor(Color.WHITE);
+//        setSupportActionBar(toolbar);
 
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        final ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
+//        getSupportActionBar().setDisplayShowTitleEnabled(false);
+//        final ActionBar ab = getSupportActionBar();
+//        ab.setDisplayHomeAsUpEnabled(true);
         dialog = new ProgressDialog(context);
         dialog.setMessage("in Progress, please wait.");
 
 
-        TextView toolarHead = (TextView) findViewById(R.id.toolarHead);
-        toolarHead.setText("Requests");
+//        TextView toolarHead = (TextView) findViewById(R.id.toolarHead);
+//        toolarHead.setText("Requests");
+
+        init();
     }
 
     private void init() {
@@ -125,7 +131,8 @@ public class RequestsActivity extends AppCompatActivity {
 
     private void validateSetCall() {
         String first_nameStr = "", last_nameStr = "", genderStr = "", dobStr = "", email_idStr = "",
-                mobile_noStr = "", addr_oneStr = "", addr_twoStr = "", landmarkStr = "", pincodeStr = "";
+                mobile_noStr = "", addr_oneStr = "", addr_twoStr = "", landmarkStr = "", pincodeStr = "",
+                created_byStr = "";
         first_nameStr = first_name.getText().toString().trim();
         last_nameStr = last_name.getText().toString().trim();
         genderStr = gender_list.getSelectedItem().toString().trim();
@@ -136,10 +143,11 @@ public class RequestsActivity extends AppCompatActivity {
         addr_twoStr = addr_two.getText().toString().trim();
         landmarkStr = landmark.getText().toString().trim();
         pincodeStr = pincode.getText().toString().trim();
-
-        if (first_nameStr.isEmpty() && email_idStr.isEmpty() && mobile_noStr.isEmpty() && genderStr.isEmpty()) {
+        created_byStr = "Self";//Sessions.getUserString(context,Controller.userID);
+        if (first_nameStr.isEmpty() && !isValidEmail(email_idStr) && !isValidMobile(mobile_noStr) && genderStr.isEmpty()) {
             return;
         }
+//        if()
 
         RequestBody requestFile = null;
         File file = null;
@@ -154,19 +162,18 @@ public class RequestsActivity extends AppCompatActivity {
         RequestBody gender = RequestBody.create(MediaType.parse("text/plain"), genderStr);
         RequestBody dob = RequestBody.create(MediaType.parse("text/plain"), dobStr);
         RequestBody email_id = RequestBody.create(MediaType.parse("text/plain"), email_idStr);
-        RequestBody passwd = RequestBody.create(MediaType.parse("text/plain"), "demo123");
+        RequestBody passwd = RequestBody.create(MediaType.parse("text/plain"), "makeEasy123");
         RequestBody address_one = RequestBody.create(MediaType.parse("text/plain"), addr_oneStr);
         RequestBody address_two = RequestBody.create(MediaType.parse("text/plain"), addr_twoStr);
         RequestBody Landmark = RequestBody.create(MediaType.parse("text/plain"), landmarkStr);
         RequestBody mobile_no = RequestBody.create(MediaType.parse("text/plain"), mobile_noStr);
         RequestBody pincode = RequestBody.create(MediaType.parse("text/plain"), pincodeStr);
-        RequestBody created_by = RequestBody.create(MediaType.parse("text/plain"), first_nameStr);
+        RequestBody created_by = RequestBody.create(MediaType.parse("text/plain"), created_byStr);
 
         userRegister(requestFile, first_name, last_name, gender, dob, email_id,
                 passwd, address_one, address_two, Landmark, mobile_no, pincode, created_by);
     }
 
-    //    mArrayUri
     private void userRegister(RequestBody requestFile, RequestBody first_name, RequestBody last_name,
                               RequestBody gender, RequestBody dob, RequestBody email_id, RequestBody passwd,
                               RequestBody address_one, RequestBody address_two, RequestBody Landmark,
@@ -192,12 +199,13 @@ public class RequestsActivity extends AppCompatActivity {
                     if (!response.body().error) {
 
                         btn_submit.setEnabled(true);
+                        resetMe();
                     } else {
-                        Controller.Toasty(context, "Some error occurred...");
+                        Controller.Toasty(context, response.body().message);
                         btn_submit.setEnabled(true);
                     }
                 } else {
-                    Controller.Toasty(context, "Full error occurred...");
+                    Controller.Toasty(context, response.body().message);
                     btn_submit.setEnabled(true);
                 }
             }
@@ -209,9 +217,35 @@ public class RequestsActivity extends AppCompatActivity {
                 }
                 btn_submit.setEnabled(true);
                 Log.d("Err", t.getMessage());
-                Controller.Toasty(context, t.getMessage());
+                Controller.Toasty(context, "Something went wrong. please try again.");
             }
         });
+    }
+
+    public static boolean isValidMobile(CharSequence target) {
+        return (!TextUtils.isEmpty(target) && target.length() > 10);
+    }
+
+    public static boolean isValidEmail(CharSequence target) {
+        return (!TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches());
+    }
+
+    void resetMe() {
+        first_name.setText("");
+        last_name.setText("");
+        dateofbirth.setText("");
+        email_id.setText("");
+        mobile_no.setText("");
+        addr_one.setText("");
+        addr_two.setText("");
+        landmark.setText("");
+        pincode.setText("");
+        btn_submit.setEnabled(true);
+        gender_list.setSelection(0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            selectedImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_person, null));
+        } else
+            selectedImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_person));
     }
 
     @Override
