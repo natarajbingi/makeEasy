@@ -230,7 +230,7 @@ if (isset($_GET['apicall'])) {
                 , $address_two, $Landmark, $pincode, $mobile_no, $id, false, $createdby)) {
                 $response['error'] = false;
                 $rsMe = array();
-                $rsMe['id']=$id;
+                $rsMe['id'] = $id;
                 $response['data'] = setuserMe($rsMe);
                 $response['message'] = 'User updated successfully';
             } else {
@@ -436,7 +436,10 @@ function setuserMe($POST)
 {
     $upload = new FileHandler();
     if (isset($POST['username']) && isset($POST['pwd'])) {
-        $res = $upload->getAllUsers($POST["username"], $_POST['pwd']);
+        $res = $upload->getAllUsers($POST["username"], $POST['pwd']);
+        if (count($res) > 0) {
+            $upload->updateLoginUserDetails($POST['username'], $POST['pwd'], $POST['registrationID'], $POST['deviceName'], $POST['imeiNumber'], $POST['appVersion']);
+        }
     } else if (isset($POST['getAllUsers'])) {
         $res = $upload->getAllUsers("", "");
     } else if (isset($POST['id'])) {

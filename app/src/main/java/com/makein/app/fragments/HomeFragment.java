@@ -78,6 +78,7 @@ public class HomeFragment extends Fragment implements HomeListAdapter.ItemClickL
         } else {
             RecyClPatch(myResponse);
         }
+
     }
 
     private void RecyClPatch(MyResponse response) {
