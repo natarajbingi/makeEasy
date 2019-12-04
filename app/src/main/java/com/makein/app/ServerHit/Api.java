@@ -19,7 +19,8 @@ public interface Api {
     //make sure you are not using localhost
     //find the ip usinc ipconfig command
 //    String BASE_URL = "http://192.168.0.107:80/makein/";
-    String BASE_URL = "http://192.168.0.107:80/makein/";
+//    String BASE_URL = "http://192.168.0.107:80/makein/";
+    String BASE_URL = "http://snsproduction.com/makeasy/";
 
 
     //this is our multipart request
@@ -68,16 +69,16 @@ public interface Api {
     @Multipart
     @POST("apis.php?apicall=userupdate")
     Call<LoginRes> userupdate(@Part("first_name") RequestBody first_name,
-                                @Part("last_name") RequestBody last_name,
-                                @Part("gender") RequestBody gender,
-                                @Part("id") RequestBody id,
-                                @Part("dob") RequestBody dob,
-                                @Part("address_one") RequestBody address_one,
-                                @Part("address_two") RequestBody address_two,
-                                @Part("Landmark") RequestBody Landmark,
-                                @Part("mobile_no") RequestBody mobile_no,
-                                @Part("pincode") RequestBody pincode,
-                                @Part("createdby") RequestBody createdby
+                              @Part("last_name") RequestBody last_name,
+                              @Part("gender") RequestBody gender,
+                              @Part("id") RequestBody id,
+                              @Part("dob") RequestBody dob,
+                              @Part("address_one") RequestBody address_one,
+                              @Part("address_two") RequestBody address_two,
+                              @Part("Landmark") RequestBody Landmark,
+                              @Part("mobile_no") RequestBody mobile_no,
+                              @Part("pincode") RequestBody pincode,
+                              @Part("createdby") RequestBody createdby
     );
 
     @Multipart
@@ -101,6 +102,12 @@ public interface Api {
 
     @Multipart
     @POST("apis.php?apicall=login")
-    Call<LoginRes> login(@Part("username") RequestBody username, @Part("pwd") RequestBody pwd);
+    Call<LoginRes> login(@Part("username") RequestBody username,
+                         @Part("pwd") RequestBody pwd,
+                         @Part("registrationID") RequestBody registrationID,
+                         @Part("imeiNumber") RequestBody imeiNumber,
+                         @Part("deviceName") RequestBody deviceName,
+                         @Part("appVersion") RequestBody appVersion
+                         );
 
 }

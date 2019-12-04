@@ -66,9 +66,12 @@ public class SubCategoryFragment extends Fragment {
         viewSelectedImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Bitmap image = ((BitmapDrawable) viewSelectedImg.getDrawable()).getBitmap();
-
-                Controller.popUpImg(context, null, "Selected Image", "", image, "bitMap");
+                try {
+                    Bitmap image = ((BitmapDrawable) viewSelectedImg.getDrawable()).getBitmap();
+                    Controller.popUpImg(context, null, "Selected Image", "", image, "bitMap");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
         addImgs();

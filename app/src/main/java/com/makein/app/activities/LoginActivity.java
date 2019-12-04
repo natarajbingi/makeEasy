@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -19,6 +20,8 @@ import com.makein.app.ServerHit.Api;
 import com.makein.app.ServerHit.RetroCall;
 import com.makein.app.controler.Controller;
 import com.makein.app.controler.Sessions;
+
+import java.util.UUID;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -35,8 +38,10 @@ public class LoginActivity extends AppCompatActivity {
     String userIdStr, passwordStr;
     private ProgressDialog dialog;
     boolean keepMeSignedStr;
-
-
+    String deviceName =  android.os.Build.MANUFACTURER + " " + android.os.Build.MODEL;
+    String imeiNumber = UUID.randomUUID().toString();
+    String appVersion = Controller.appVersion;
+    String registrationID = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,6 +107,8 @@ public class LoginActivity extends AppCompatActivity {
             return;
         } else {
             keepMeSignedStr = remember.isChecked();
+
+            String registrationID = "";
             Login(userIdStr, passwordStr);
 
         }
@@ -109,11 +116,11 @@ public class LoginActivity extends AppCompatActivity {
         login.setEnabled(false);
     }
 
-    @Override
-    public void onBackPressed() {
-        // disable going back to the MainActivity
-        moveTaskToBack(true);
-    }
+//    @Override
+//    public void onBackPressed() {
+//        // disable going back to the MainActivity
+//        moveTaskToBack(true);
+//    }
 
 
     private void Login(String username, String pwd) {
@@ -123,10 +130,15 @@ public class LoginActivity extends AppCompatActivity {
         RequestBody usernameBody = RequestBody.create(MediaType.parse("text/plain"), username);
         RequestBody pwdBody = RequestBody.create(MediaType.parse("text/plain"), pwd);
 
+        RequestBody registrationIDBody = RequestBody.create(MediaType.parse("text/plain"), registrationID);
+        RequestBody imeiNumberBody = RequestBody.create(MediaType.parse("text/plain"), imeiNumber);
+        RequestBody deviceNameBody = RequestBody.create(MediaType.parse("text/plain"), deviceName);
+        RequestBody appVersionBody = RequestBody.create(MediaType.parse("text/plain"), appVersion);
+
         //creating our api
         Api api = RetroCall.getClient();
         //creating a call and calling the upload image method
-        Call<LoginRes> call = api.login(usernameBody, pwdBody);
+        Call<LoginRes> call = api.login(usernameBody, pwdBody,registrationIDBody,imeiNumberBody,deviceNameBody,appVersionBody);
 
         //finally performing the call
         call.enqueue(new Callback<LoginRes>() {

@@ -220,12 +220,12 @@ class FileHandler
     }
 
 
-    public function updateUserRegister( $first_name, $last_name, $gender, $dob, $address_one,
+    public function updateUserRegister($first_name, $last_name, $gender, $dob, $address_one,
                                        $address_two, $Landmark, $pincode, $mobile_no, $id, $del, $createdby)
     {
         if ($del) {// deleting User
             $empQuery = "UPDATE `users` SET  `status`='0', `createdby`='$createdby', `updated_datetime`=NOW()  WHERE  `id`='$id'";
-        }   else {
+        } else {
             $empQuery = "UPDATE `users` SET `first_name`='$first_name',`last_name`='$last_name',`gender`='$gender',`dob`='$dob',  `address_one`='$address_one', `address_two`='$address_two',`Landmark`='$Landmark' ,`pincode`='$pincode',`mobile_no`='$mobile_no',`createdby`='$createdby', `updated_datetime`=NOW()  WHERE `id`='$id'";
         }
 
@@ -292,7 +292,11 @@ class FileHandler
 
     public function getAllProds($withSub, $created_by)
     {
-        $stmt = $this->con->prepare("SELECT id, name, description, img_url, created_datetime FROM product_category WHERE `status`=1 and `visible`=1 and `created_by`='$created_by' ORDER BY id DESC");
+        $created_byMe = "";
+        if ($created_by != "") {
+            $created_byMe = " and `created_by`='$created_by'";
+        }
+        $stmt = $this->con->prepare("SELECT id, name, description, img_url, created_datetime FROM product_category WHERE `status`=1 and `visible`=1 " . $created_byMe . " ORDER BY id DESC");
         $stmt->execute();
         $stmt->bind_result($id, $name, $description, $img_url, $created_datetime);
         $images = array();
@@ -352,6 +356,8 @@ class FileHandler
         else
             $qry = "SELECT id, first_name, last_name, gender, email_id, passwd,dob, address_one, address_two, Landmark, pincode, mobile_no, createdby,  created_datetime, updated_datetime, profile_img  FROM users WHERE status=1 and email_id = '$username' and passwd = '$pwd'  ORDER BY id DESC";
 
+//        echo $qry;
+
         $stmt = $this->con->prepare($qry);
         $stmt->execute();
         $stmt->bind_result($id, $first_name, $last_name, $gender, $email_id, $passwd, $dob, $address_one, $address_two, $Landmark, $pincode, $mobile_no, $createdby, $created_datetime, $updated_datetime, $profile_img);
@@ -381,6 +387,29 @@ class FileHandler
         }
 
         return $profile;
+    }
+
+    public function updateLoginUserDetails($username, $pwd, $registrationID, $deviceName, $imeiNumber, $appVersion)
+    {
+        $addStr = "";
+        if ($registrationID != "") {
+            $addStr . " `registrationID`='$registrationID', ";
+        }
+        if ($deviceName != "") {
+            $addStr . " `deviceName`='$deviceName', ";
+        }
+        if ($imeiNumber != "") {
+            $addStr . " `imeiNumber`='$imeiNumber', ";
+        }
+        if ($appVersion != "") {
+            $addStr . " `appVersion`='$appVersion', ";
+        }
+
+        $empQuery = "UPDATE `users` SET  " . $addStr . " `last_login`=NOW() WHERE `email_id`='$username' AND `passwd`='$pwd' ";
+
+        if (mysqli_query($this->con, $empQuery))
+            return true;
+        return false;
     }
 
     public function getAllSubProds($pr_id)
@@ -489,7 +518,8 @@ class FileHandler
         $imgUrl = explode(",", $img_urls);
         $imgArray = array();
         for ($x = 0; $x < count($imgUrl); $x++) {
-            $absurl = 'http://' . gethostbyname(gethostname()) . '/makein' . UPLOAD_PATH . $imgUrl[$x];
+//            $absurl = 'http://' . gethostbyname(gethostname()) . '/makein' . UPLOAD_PATH . $imgUrl[$x];
+            $absurl = 'http://' . gethostbyname(gethostname()) . '/makeasy' . UPLOAD_PATH . $imgUrl[$x];
             array_push($imgArray, $absurl);
         }
 

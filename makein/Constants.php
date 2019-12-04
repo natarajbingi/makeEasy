@@ -6,6 +6,11 @@
  * Time: 11:42 PM
  */
 
+/*define('DB_HOST', 'localhost');
+define('DB_USER', 'snsadmin');
+define('DB_PASS', 'snsadmin@123');
+define('DB_NAME', 'make_in');*/
+
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
