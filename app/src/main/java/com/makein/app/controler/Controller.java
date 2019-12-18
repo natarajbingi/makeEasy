@@ -48,6 +48,8 @@ public class Controller extends Application {
     public static final String keepMeSignedStr = "keepMeSignedStr";
     public static final String Categories = "Categories";
     public static final String appVersion = "1.0.1";
+    public static final String token = "token";
+
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     public static boolean checkSecurPermission(Context ctx) {

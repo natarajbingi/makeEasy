@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "148380714251",
+    "firebase_url": "https://makesmsadmin.firebaseio.com",
+    "project_id": "makesmsadmin",
+    "storage_bucket": "makesmsadmin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:148380714251:android:9dd7ff981ac5de2fbc0e0e",
+        "android_client_info": {
+          "package_name": "com.makein.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "148380714251-o8cqlt2c5jul660kf5bp42tdti3ifish.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.makein.app",
+            "certificate_hash": "10c1f4e64a499dca889d9d3d89114228a253afcd"
+          }
+        },
+        {
+          "client_id": "148380714251-jhd0rtrg5ql9auqke5s5986iuqimsrp7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEcBiGZ24sSR__17I_kZENsU52LBYtias"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "148380714251-jhd0rtrg5ql9auqke5s5986iuqimsrp7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
