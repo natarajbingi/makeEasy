@@ -49,6 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         context = LoginActivity.this;
         dialog = new ProgressDialog(LoginActivity.this);
         dialog.setMessage("in Progress, please wait.");
+        registrationID = Sessions.getUserObject(getApplicationContext(), Controller.token);
 
         String LogInDirect = Sessions.getUserObject(context, Controller.keepMeSignedStr);
         if (LogInDirect != null) {
@@ -115,12 +116,6 @@ public class LoginActivity extends AppCompatActivity {
 
         login.setEnabled(false);
     }
-
-//    @Override
-//    public void onBackPressed() {
-//        // disable going back to the MainActivity
-//        moveTaskToBack(true);
-//    }
 
 
     private void Login(String username, String pwd) {

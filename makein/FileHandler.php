@@ -173,17 +173,26 @@ class FileHandler
         return 102;
     }
 
-    public function saveUserProdReq($user_id, $prod_id, $prod_subid, $quantity, $sell_cost, $delivery_address, $deli_status)
+    public function saveUserProdReq($user_id, $prod_id, $prod_subid, $quantity, $sell_cost, $delivery_address, $userContactNo
+        , $userQuery, $userCompanyName, $userCompanyAddress, $userCompnyEmailAddress, $comment
+    )
     {
         $date = new DateTime("NOW");
         $invoice_no = $date->format("dmY") . "INV" . $date->format("His");
 
-        $empQuery = "INSERT INTO `user_prod_reqs`( `invoice_no`, `user_id`, `prod_id`, `prod_subid`, `quantity`, `sell_cost`, `delivery_address`, `status`,`deli_status`, `created_datetime`)" .
-            " VALUES ('$invoice_no','$user_id','$prod_id','$prod_subid','$quantity','$sell_cost','$delivery_address','1','$deli_status',NOW() )";
+        $empQuery = "INSERT INTO `user_prod_reqs`( `invoice_no`, `user_id`, `prod_id`, `prod_subid`, `quantity`, `sell_cost`, `delivery_address`," .
+            " `status`, `deli_status`, `userContactNo`, `userQuery`, `userCompanyName`, `userCompanyAddress`, `userCompnyEmailAddress`," .
+            " `comment`, `created_datetime`) VALUES ('$invoice_no','$user_id' ,'$prod_id','$prod_subid' ,'$quantity','$sell_cost', " .
+            "'$delivery_address','1', 'PENDING' ,'$userContactNo','$userQuery','$userCompanyName','$userCompanyAddress' " .
+            ",'$userCompnyEmailAddress','$comment',NOW())";
 
-
-        if (mysqli_query($this->con, $empQuery))
+        if (mysqli_query($this->con, $empQuery)) {
+            $token = $this->getExistToken('', 'admin');
+            $token1 = $this->getExistToken('$user_id', 'user');
+            $this->sendPushNotification('admin', 'New Request-'.$userCompanyName, $userQuery, $token);
+            $this->sendPushNotification('user', 'Processing Request', 'Your request reached US, Will get back to soon thank you.', $token1);
             return $invoice_no;
+        }
         return "";
     }
 
@@ -290,6 +299,26 @@ class FileHandler
         return $res > 0;
     }
 
+    public function getExistToken($userID, $type)
+    {
+        $empQuery = "";
+
+        if ($type == 'admin') {
+            $empQuery = "SELECT `registrationID` FROM `users` WHERE `createdby`='ADMIN'";
+        } else {
+            $empQuery = "SELECT `registrationID` FROM `users` WHERE `id`='$userID'";
+        }
+        $stmt = $this->con->prepare($empQuery);
+        $stmt->execute();
+        $stmt->bind_result($registrationID);
+        $res = "";
+
+        while ($stmt->fetch()) {
+            $res = $registrationID;
+        }
+        return $res;
+    }
+
     public function getAllProds($withSub, $created_by)
     {
         $created_byMe = "";
@@ -350,17 +379,17 @@ class FileHandler
     public function getAllUsers($username, $pwd)
     {
         if ($username == "")
-            $qry = "SELECT id, first_name, last_name, gender, email_id, passwd, dob,address_one, address_two, Landmark, pincode, mobile_no, createdby,  created_datetime, updated_datetime, profile_img  FROM users WHERE status=1 AND createdby != 'ADMIN' ORDER BY id DESC";
+            $qry = "SELECT id, first_name, last_name, gender, email_id, passwd, dob,address_one, address_two, Landmark, pincode, mobile_no, createdby,  created_datetime, updated_datetime, profile_img, registrationID, appVersion, last_login  FROM users WHERE status=1 AND createdby != 'ADMIN' ORDER BY id DESC";
         else if ($username == "0")
-            $qry = "SELECT id, first_name, last_name, gender, email_id, passwd, dob,address_one, address_two, Landmark, pincode, mobile_no, createdby,  created_datetime, updated_datetime, profile_img  FROM users WHERE status=1 AND id = $pwd  ORDER BY id DESC";
+            $qry = "SELECT id, first_name, last_name, gender, email_id, passwd, dob,address_one, address_two, Landmark, pincode, mobile_no, createdby,  created_datetime, updated_datetime, profile_img, registrationID, appVersion, last_login  FROM users WHERE status=1 AND id = $pwd  ORDER BY id DESC";
         else
-            $qry = "SELECT id, first_name, last_name, gender, email_id, passwd,dob, address_one, address_two, Landmark, pincode, mobile_no, createdby,  created_datetime, updated_datetime, profile_img  FROM users WHERE status=1 and email_id = '$username' and passwd = '$pwd'  ORDER BY id DESC";
+            $qry = "SELECT id, first_name, last_name, gender, email_id, passwd,dob, address_one, address_two, Landmark, pincode, mobile_no, createdby,  created_datetime, updated_datetime, profile_img, registrationID, appVersion, last_login  FROM users WHERE status=1 and email_id = '$username' and passwd = '$pwd'  ORDER BY id DESC";
 
 //        echo $qry;
 
         $stmt = $this->con->prepare($qry);
         $stmt->execute();
-        $stmt->bind_result($id, $first_name, $last_name, $gender, $email_id, $passwd, $dob, $address_one, $address_two, $Landmark, $pincode, $mobile_no, $createdby, $created_datetime, $updated_datetime, $profile_img);
+        $stmt->bind_result($id, $first_name, $last_name, $gender, $email_id, $passwd, $dob, $address_one, $address_two, $Landmark, $pincode, $mobile_no, $createdby, $created_datetime, $updated_datetime, $profile_img, $registrationID, $appVersion, $last_login);
         $profile = array();
         while ($stmt->fetch()) {
             $temp = array();
@@ -382,6 +411,9 @@ class FileHandler
             $temp['mobile_no'] = $mobile_no;
             $temp['created_datetime'] = $created_datetime;
             $temp['updated_datetime'] = $updated_datetime;
+            $temp['registrationID'] = $registrationID;
+            $temp['appVersion'] = $appVersion;
+            $temp['last_login'] = $last_login;
 
             array_push($profile, $temp);
         }
@@ -393,16 +425,17 @@ class FileHandler
     {
         $addStr = "";
         if ($registrationID != "") {
-            $addStr . " `registrationID`='$registrationID', ";
+            $addStr = $addStr . " `registrationID`='$registrationID', ";
         }
+
         if ($deviceName != "") {
-            $addStr . " `deviceName`='$deviceName', ";
+            $addStr = $addStr . " `deviceName`='$deviceName', ";
         }
         if ($imeiNumber != "") {
-            $addStr . " `imeiNumber`='$imeiNumber', ";
+            $addStr = $addStr . " `imeiNumber`='$imeiNumber', ";
         }
         if ($appVersion != "") {
-            $addStr . " `appVersion`='$appVersion', ";
+            $addStr = $addStr . " `appVersion`='$appVersion', ";
         }
 
         $empQuery = "UPDATE `users` SET  " . $addStr . " `last_login`=NOW() WHERE `email_id`='$username' AND `passwd`='$pwd' ";
@@ -446,17 +479,20 @@ class FileHandler
 
     public function getAllProdReqs($usr_id, $deli_status)
     {
+        //if deli_status is empty get all type
+        //if user_id is 0 get all to admin else to particular user .
         $deli_req = "";
         if ($deli_status != "") {
             $deli_req = " and ureq.`deli_status`='$deli_status' ";
         }
-        if ($usr_id == 0)
+        if ($usr_id == "0")
             $qry = "SELECT ureq.`id`, ureq.`invoice_no`,  
 
                     pcr.id AS prodid,  pcr.name AS prodName,  ureq.`quantity`,   pscr.id AS SpCid, pscr.name AS SpCName, pscr.img_urls, 
-                    usr.id as userId, usr.first_name+' '+ usr.last_name AS usrName, usr.gender as gender,usr.mobile_no as mobile ,
+                    usr.id as userId,  CONCAT(usr.first_name,' ', usr.last_name)  AS usrName, usr.gender as gender,usr.mobile_no as mobile ,
                     
-                    ureq.`sell_cost`,  ureq.`delivery_address`,  ureq.`status`,  ureq.`deli_status`,  ureq.`comment`, 
+                    ureq.`sell_cost`,  ureq.`delivery_address`,  ureq.`status`,  ureq.`deli_status`,  ureq.`comment`,
+                    ureq.userContactNo,  ureq.userQuery,  ureq.userCompanyName,  ureq.userCompanyAddress, ureq.userCompnyEmailAddress,
                     ureq.`created_datetime`,  ureq.`updated_datetime`
                     
                     FROM 
@@ -468,9 +504,10 @@ class FileHandler
             $qry = "SELECT ureq.`id`, ureq.`invoice_no`,  
 
                     pcr.id AS prodid,  pcr.name AS prodName,  ureq.`quantity`,  pscr.id AS SpCid, pscr.name AS SpCName, pscr.img_urls,
-                    usr.id as userId, usr.first_name+' '+ usr.last_name AS usrName,  usr.gender as gender,usr.mobile_no as mobile ,
+                    usr.id as userId,  CONCAT(usr.first_name,' ', usr.last_name) AS usrName,  usr.gender as gender,usr.mobile_no as mobile ,
                     
                     ureq.`sell_cost`,  ureq.`delivery_address`,  ureq.`status`,  ureq.`deli_status`,  ureq.`comment`, 
+                     ureq.userContactNo,  ureq.userQuery,  ureq.userCompanyName,  ureq.userCompanyAddress, ureq.userCompnyEmailAddress,
                     ureq.`created_datetime`,  ureq.`updated_datetime`
                     
                     FROM 
@@ -479,11 +516,14 @@ class FileHandler
                     WHERE ureq.`user_id`='$usr_id' AND  ureq.`prod_id`=pcr.id AND  ureq.`prod_subid`=pscr.id and  ureq.`status`=1 
                   $deli_req  ORDER BY ureq.id DESC";
 
+//       echo $qry;
         $stmt1 = $this->con->prepare($qry);
         $stmt1->execute();
         $stmt1->bind_result($id, $invoice_no, $prodid, $prodName, $quantity, $SpCid,
             $SpCName, $img_urls, $userId, $usrName, $gender, $mobile_no, $sell_cost, $delivery_address, $status, $deli_status,
-            $comment, $created_datetime, $updated_datetime);
+            $comment,
+            $userContactNo,   $userQuery,   $userCompanyName,   $userCompanyAddress,   $userCompnyEmailAddress,
+            $created_datetime, $updated_datetime);
         $ProdReqs = array();
         while ($stmt1->fetch()) {
 
@@ -505,6 +545,11 @@ class FileHandler
             $temp['status'] = $status;
             $temp['deli_status'] = $deli_status;
             $temp['comment'] = $comment;
+            $temp['userContactNo'] = $userContactNo;
+            $temp['userQuery'] = $userQuery;
+            $temp['userCompanyName'] = $userCompanyName;
+            $temp['userCompanyAddress'] = $userCompanyAddress;
+            $temp['userCompnyEmailAddress'] = $userCompnyEmailAddress;
             $temp['created_datetime'] = $created_datetime;
             $temp['updated_datetime'] = $updated_datetime;
             array_push($ProdReqs, $temp);
@@ -518,12 +563,53 @@ class FileHandler
         $imgUrl = explode(",", $img_urls);
         $imgArray = array();
         for ($x = 0; $x < count($imgUrl); $x++) {
-//            $absurl = 'http://' . gethostbyname(gethostname()) . '/makein' . UPLOAD_PATH . $imgUrl[$x];
+            // $absurl = 'http://' . gethostbyname(gethostname()) . '/makein' . UPLOAD_PATH . $imgUrl[$x];
             $absurl = 'http://' . gethostbyname(gethostname()) . '/makeasy' . UPLOAD_PATH . $imgUrl[$x];
             array_push($imgArray, $absurl);
         }
 
         return $imgArray;
+    }
+
+    public function sendPushNotification($toUser_Admin, $title, $body, $token)
+    {
+        $API_ACCESS_KEY = "";
+        if ($toUser_Admin == "user") {
+            $API_ACCESS_KEY = API_ACCESS_KEY_USERS;
+        } else {
+            $API_ACCESS_KEY = API_ACCESS_KEY_ADMIN;
+        }
+        //   $registrationIds = ;
+        #prep the bundle
+        $msg = array
+        (
+            'body' => $body,//'Firebase Push Notification',
+            'title' => $title//'Vishal Thakkar',
+
+        );
+        $fields = array
+        (
+            'to' => $token,//$_REQUEST['token'],
+            'notification' => $msg
+        );
+
+
+        $headers = array
+        (
+            'Authorization: key=' . $API_ACCESS_KEY,
+            'Content-Type: application/json'
+        );
+        #Send Reponse To FireBase Server
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
     }
 
 }

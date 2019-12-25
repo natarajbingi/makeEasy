@@ -101,6 +101,11 @@ public interface Api {
     Call<MyResponse> getallprodsubs(@Part("created_by") RequestBody created_by);
 
     @Multipart
+    @POST("apis.php?apicall=getAllProdReqs")
+    Call<MyReqsResponse> getAllProdReqs(@Part("user_id") RequestBody user_id,
+                                    @Part("deli_status") RequestBody deli_status);
+
+    @Multipart
     @POST("apis.php?apicall=login")
     Call<LoginRes> login(@Part("username") RequestBody username,
                          @Part("pwd") RequestBody pwd,

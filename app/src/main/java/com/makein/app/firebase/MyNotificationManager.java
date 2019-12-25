@@ -15,7 +15,7 @@ import com.makein.app.R;
 public class MyNotificationManager {
 
     private Context context;
-    public static final int NOTIFICATION_ID = 12345;
+    public static final int NOTIFICATION_ID = 7700156;
 
     public MyNotificationManager(Context context) {
         this.context = context;

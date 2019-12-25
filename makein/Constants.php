@@ -15,6 +15,8 @@ define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'make_in');
+define( 'API_ACCESS_KEY_ADMIN', 'AAAAIowuBQs:APA91bGj3xghbC-bz0ESF8oynBcNwywGsGEBjE-GKTKbCWqDcSXhrGnIh2zuTtDErUkmLZvT_ywUr-qxhjq-YQ59SU7u3fOcIv9fqd-wil99MxqgC6r3IqfzhalLw4H-b5-eWkO0p1KY');
+define( 'API_ACCESS_KEY_USERS', 'AAAAjsB7b-o:APA91bGprI2wPvQvr6XAqZWcwfXLX_n84859p_13C22b7Y5Sf0qgC3-fQR6pi9YY00AZCsp03vB3UWUXaJTcq3o_5U5WIGZ5JLp_uwM39l5SoIIOhdODJRRLNXtNBL7OtvFvSRfVrSor');
 
 define('UPLOAD_PATH', '/uploads/');
 define('one', 'addcategory');
@@ -40,7 +42,7 @@ define('onesix', 'login');
 define('oneseven', 'getallusers');
 define('oneight', 'getallsubs');
 //define('oneight', 'addcategory');
-//define('onenine', 'addcategory');
+define('onenine', 'pushnoti');
 //define('twenty', 'addcategory');
 
 //-----------------------------//

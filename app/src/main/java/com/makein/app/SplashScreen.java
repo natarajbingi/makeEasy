@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.makein.app.activities.LoginActivity;
 import com.makein.app.activities.TestActivity;
 import com.makein.app.controler.Controller;
+import com.makein.app.controler.Sessions;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -53,6 +54,8 @@ public class SplashScreen extends AppCompatActivity {
             enter();
         }
 
+        String str = Sessions.getUserObject(getApplicationContext(), Controller.token);
+        Log.d("token", str);
     }
 
 

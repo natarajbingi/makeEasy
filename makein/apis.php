@@ -347,8 +347,15 @@ if (isset($_GET['apicall'])) {
             $quantity = $_POST["quantity"];
             $sell_cost = $_POST["sell_cost"];
             $delivery_address = $_POST["delivery_address"];
-            $deli_status = $_POST["deli_status"];// PENDING,DELIVERED,CANCELLED
-            $res = $upload->saveUserProdReq($user_id, $prod_id, $prod_subid, $quantity, $sell_cost, $delivery_address, $deli_status);
+            // $deli_status = $_POST["deli_status"];// PENDING,DELIVERED,CANCELLED
+            $userContactNo = $_POST["userContactNo"];
+            $userQuery = $_POST["userQuery"];
+            $userCompanyName = $_POST["userCompanyName"];
+            $userCompanyAddress = $_POST["userCompanyAddress"];
+            $userCompnyEmailAddress = $_POST["userCompnyEmailAddress"];
+            $comment = $_POST["comment"];
+            $res = $upload->saveUserProdReq($user_id, $prod_id, $prod_subid, $quantity, $sell_cost, $delivery_address, $userContactNo
+                , $userQuery, $userCompanyName, $userCompanyAddress, $userCompnyEmailAddress, $comment);
             if ($res != "") {
                 $response['error'] = false;
                 $response['invoice'] = $res;
@@ -429,6 +436,20 @@ if (isset($_GET['apicall'])) {
             $response['data'] = $res;
             $response['message'] = count($res) > 0 ? "Logged in successfully" : " Login failed.";
             break;
+        /* PushNotification handle*/
+        /*19 pushnoti*/
+        case onenine:
+            $upload = new FileHandler();
+            $toUser_Admin = $_POST["toUser_Admin"];
+            $title = $_POST["title"];
+            $body = $_POST["body"];
+            $token = $_POST["token"];
+
+            $res = $upload->sendPushNotification($toUser_Admin, $title, $body, $token);
+            $response['error'] = ($res) != null;
+            $response['data'] = json_decode($res, TRUE);
+            $response['message'] = ($res) != null ? "Notified successfully" : "  failed to Notify.";
+            break;
     }
 }
 
@@ -436,14 +457,14 @@ function setuserMe($POST)
 {
     $upload = new FileHandler();
     if (isset($POST['username']) && isset($POST['pwd'])) {
-        $res = $upload->getAllUsers($POST["username"], $POST['pwd']);
+        $res = $upload->getAllUsers($POST["username"], $POST['pwd']); // check for login
         if (count($res) > 0) {
             $upload->updateLoginUserDetails($POST['username'], $POST['pwd'], $POST['registrationID'], $POST['deviceName'], $POST['imeiNumber'], $POST['appVersion']);
         }
     } else if (isset($POST['getAllUsers'])) {
-        $res = $upload->getAllUsers("", "");
+        $res = $upload->getAllUsers("", ""); // get all users
     } else if (isset($POST['id'])) {
-        $res = $upload->getAllUsers("0", $POST['id']);
+        $res = $upload->getAllUsers("0", $POST['id']); // get particular user
     } else {
         return "";
     }
