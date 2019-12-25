@@ -20,6 +20,7 @@ import com.makein.app.fragments.HomeFragment;
 import com.makein.app.R;
 import com.makein.app.controler.Controller;
 import com.makein.app.controler.Sessions;
+import com.makein.app.fragments.RequestsFragment;
 import com.makein.app.fragments.SubCategoryFragment;
 import com.squareup.picasso.Picasso;
 
@@ -112,7 +113,8 @@ public class HomeActivity extends AppCompatActivity
     void callHomeFrag() {
 
         toolbar.setTitle("Home");
-        fragmentClass = HomeFragment.class;
+//        fragmentClass = HomeFragment.class;
+        fragmentClass = RequestsFragment.class;
         SetFrag(fragmentClass);
     }
 
@@ -142,9 +144,11 @@ public class HomeActivity extends AppCompatActivity
             }
             break;
             case R.id.nav_requests: {
-                Intent intent = new Intent(HomeActivity.this, RequestsActivity.class);
-                startActivity(intent);
-
+                toolbar.setTitle("Categories");
+                if (fragmentClass != HomeFragment.class) {
+                    fragmentClass = HomeFragment.class;
+                    SetFrag(fragmentClass);
+                }
             }
             break;
             case R.id.nav_chng_pass: {
@@ -186,7 +190,7 @@ public class HomeActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if (fragmentClass != HomeFragment.class) {
+            if (fragmentClass != RequestsFragment.class) {
                 callHomeFrag();
             } else {
                 finish();

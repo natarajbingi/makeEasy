@@ -75,6 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:text="Remember me"
+                android:checked="true"
                 android:textColor="@color/colorPrimaryDark"
                 android:textStyle="bold" />
 
