@@ -1,8 +1,10 @@
 package com.makein.app.controler;
 
+import android.app.AlertDialog;
 import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -94,14 +96,58 @@ public class Controller extends Application {
         if (res != null)
             Log.d("LogRes-", g.toJson(res));
     }
+    /* Global Alertdialog for application*/
+    public static void alertDialogShow(Context context, String message) {
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+        alertDialog.setIcon(R.mipmap.ic_launcher);
+        alertDialog.setTitle(context.getResources().getString(R.string.app_name));
+        alertDialog.setMessage(message);
+        alertDialog.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = alertDialog.create();
 
+        // show it
+        alert.show();
+    }
+
+    /* Global Alertdialog for application*/
+    public static AlertDialog alertDialogShow(Context context,
+                                              String message,
+                                              final DialogInterface.OnClickListener onClickListener) {
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+        alertDialog.setTitle(context.getResources().getString(R.string.app_name));
+        alertDialog.setMessage(message);
+        alertDialog.setIcon(R.mipmap.ic_launcher);
+        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                onClickListener.onClick(dialog, which);
+            }
+        });
+        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = alertDialog.create();
+
+        // show it
+        alert.show();
+        return alert;
+    }
     public static Map<String, String> convertMapArr(List<MyResponse.Data> data) {
         Map<String, String> ReturnArray = new LinkedHashMap<String, String>();
         ReturnArray.put("Select", "Select");
-        for (int i = 0; i < data.size(); i++) {
-            ReturnArray.put(data.get(i).name.toUpperCase() + "-" + data.get(i).id, data.get(i).id);
+        try {
+            for (int i = 0; i < data.size(); i++) {
+                ReturnArray.put(data.get(i).name.toUpperCase() + "-" + data.get(i).id, data.get(i).id);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-
         return ReturnArray;
     }
 

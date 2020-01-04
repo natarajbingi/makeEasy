@@ -69,16 +69,13 @@ public class HomeFragment extends Fragment implements HomeListAdapter.ItemClickL
         dialog.setMessage("in Progress, please wait.");
         show_items_recycle = (RecyclerView) rootView.findViewById(R.id.show_items_recycle);
 
-
 //        myResponse = (MyResponse) Sessions.getUserObj(context, Controller.Categories, MyResponse.class);
-
 //        if (myResponse == null) {
             String userId = Sessions.getUserObject(context, Controller.userID);
             GetAllProdSubs(userId);
         /*} else {
             RecyClPatch(myResponse);
         }*/
-
     }
 
     private void RecyClPatch(MyResponse response) {
