@@ -9,9 +9,13 @@ import android.os.Bundle;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.material.navigation.NavigationView;
+import com.makein.app.Models.MyResponse;
+import com.makein.app.ServerHit.Api;
+import com.makein.app.ServerHit.RetroCall;
 import com.makein.app.controler.BitmapTransform;
 import com.makein.app.fragments.AddCategoryFragment;
 import com.makein.app.fragments.AddSubCategoryFragment;
@@ -35,6 +39,12 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -70,6 +80,11 @@ public class HomeActivity extends AppCompatActivity
         leftMenuDesc.setText(Sessions.getUserObject(context, Controller.emailID));
 
 
+        MyResponse myResponse = (MyResponse) Sessions.getUserObj(context, Controller.Categories, MyResponse.class);
+        if (myResponse.data.get(0).name == null) {
+            String userId = Sessions.getUserObject(context, Controller.userID);
+            GetAllProdSubs(userId);
+        }
         try {
             int size = (int) Math.ceil(Math.sqrt(800 * 600));
             // Loads given image
@@ -227,5 +242,36 @@ public class HomeActivity extends AppCompatActivity
                 .replace(R.id.fragmentParentViewGroup, fragment, fragmentTag)
                 .addToBackStack(backStateName)
                 .commit();
+
+
+    }
+
+
+    private void GetAllProdSubs(String created_by) {
+        //creating request body for file
+        RequestBody created_byB = RequestBody.create(MediaType.parse("text/plain"), created_by);
+        //creating our api
+        Api api = RetroCall.getClient();
+        //creating a call and calling the upload image method
+        Call<MyResponse> call = api.getallprodsubs(created_byB);
+        //finally performing the call
+        call.enqueue(new Callback<MyResponse>() {
+            @Override
+            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                assert response.body() != null;
+                if (!response.body().error) {
+                    Controller.Toasty(context, "Categories updated...");
+                    Sessions.setUserObj(context, response.body(), Controller.Categories);
+                } else {
+                    Controller.Toasty(context, "Some error occurred...");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MyResponse> call, Throwable t) {
+                Controller.Toasty(context, t.getMessage());
+                Log.d("Err", t.getMessage());
+            }
+        });
     }
 }

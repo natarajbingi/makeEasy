@@ -3,6 +3,7 @@ package com.makein.app.fragments;
 import android.app.ProgressDialog;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -23,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -109,11 +111,18 @@ public class AddSubCategoryFragment extends Fragment implements View.OnClickList
 
 
         myResponse = (MyResponse) Sessions.getUserObj(context, Controller.Categories, MyResponse.class);
-        categoryListArr = Controller.convertMapArr(myResponse.data);
-
-        setSpinners(categry_list, categoryListArr.keySet().toArray(new String[0]));
-        triggImgGet.setOnClickListener(this);
-        btn_submit.setOnClickListener(this);
+        if (myResponse!= null) {
+            categoryListArr = Controller.convertMapArr(myResponse.data);
+            setSpinners(categry_list, categoryListArr.keySet().toArray(new String[0]));
+            triggImgGet.setOnClickListener(this);
+            btn_submit.setOnClickListener(this);
+        } else
+            Controller.alertDialogShow(context, "Please add categories to proceed.", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    getActivity().onBackPressed();
+                }
+            });
     }
 
 
