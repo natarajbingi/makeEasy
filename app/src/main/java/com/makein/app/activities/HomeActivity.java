@@ -172,8 +172,8 @@ public class HomeActivity extends AppCompatActivity
                     fragmentClass = ChangePwsFragment.class;
                     SetFrag(fragmentClass);
                 }
-//                Intent intent = new Intent(HomeActivity.this, ChangePassword.class);
-//                startActivity(intent);
+                //           Intent intent = new Intent(HomeActivity.this, ChangePassword.class);
+                //                startActivity(intent);
 
             }
             break;

@@ -26,12 +26,20 @@ import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.makein.app.Models.GetAllSubsRes;
 import com.makein.app.Models.MyResponse;
 import com.makein.app.R;
 import com.makein.app.ServerHit.Api;
 import com.makein.app.ServerHit.RetroCall;
+import com.makein.app.adapters.HomeListAdapter;
+import com.makein.app.adapters.SubCatListAdapter;
 import com.makein.app.controler.BitmapTransform;
 import com.makein.app.controler.Controller;
 import com.makein.app.controler.ImageClickLIstener;
@@ -51,7 +59,7 @@ import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AddSubCategoryFragment extends Fragment implements View.OnClickListener {
+public class AddSubCategoryFragment extends Fragment implements View.OnClickListener, SubCatListAdapter.ItemClickListener {
 
     private Context context;
     private MyResponse myResponse;
@@ -68,6 +76,11 @@ public class AddSubCategoryFragment extends Fragment implements View.OnClickList
     private List<String> imagesEncodedList;
     private ArrayList<Uri> mArrayUri;
     private ProgressDialog dialog;
+
+    RecyclerView show_items_recycle;
+    FloatingActionButton floatingActionButton;
+    CardView add_layout_holder;
+    boolean showingEdit = true;
 
     public static AddSubCategoryFragment newInstance() {
         AddSubCategoryFragment fragment = new AddSubCategoryFragment();
@@ -87,6 +100,7 @@ public class AddSubCategoryFragment extends Fragment implements View.OnClickList
         context = container.getContext();
 
         init(rootView);
+        rootView.findViewById(R.id.sub_catigory_toolbar_header).setVisibility(View.GONE);
 
 
         return rootView;
@@ -109,9 +123,13 @@ public class AddSubCategoryFragment extends Fragment implements View.OnClickList
         sub_sell_cost = (EditText) rootView.findViewById(R.id.sub_sell_cost);
         btn_submit = (Button) rootView.findViewById(R.id.btn_submit);
 
-
+        show_items_recycle = (RecyclerView) rootView.findViewById(R.id.show_items_recycle);
+        add_layout_holder = (CardView) rootView.findViewById(R.id.add_layout_holder);
+        floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.floatingActionButton);
+        floatingActionButton.setOnClickListener(this);
+        getAllSubs("0");
         myResponse = (MyResponse) Sessions.getUserObj(context, Controller.Categories, MyResponse.class);
-        if (myResponse!= null) {
+        if (myResponse != null) {
             categoryListArr = Controller.convertMapArr(myResponse.data);
             setSpinners(categry_list, categoryListArr.keySet().toArray(new String[0]));
             triggImgGet.setOnClickListener(this);
@@ -212,6 +230,18 @@ public class AddSubCategoryFragment extends Fragment implements View.OnClickList
                 btn_submit.setEnabled(false);
             }
             break;
+            case R.id.floatingActionButton:
+                if (showingEdit) {
+                    floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.arrow_back));
+                    show_items_recycle.setVisibility(View.GONE);
+                    add_layout_holder.setVisibility(View.VISIBLE);
+                } else {
+                    floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_white));
+                    show_items_recycle.setVisibility(View.VISIBLE);
+                    add_layout_holder.setVisibility(View.GONE);
+                }
+                showingEdit = !showingEdit;
+                break;
         }
     }
 
@@ -317,6 +347,50 @@ public class AddSubCategoryFragment extends Fragment implements View.OnClickList
         });
     }
 
+    private void getAllSubs(String created_by) {
+        dialog.show();
+        //creating request body for file
+        RequestBody created_byB = RequestBody.create(MediaType.parse("text/plain"), created_by);
+        //creating our api
+        Api api = RetroCall.getClient();
+        //creating a call and calling the upload image method
+        Call<GetAllSubsRes> call = api.getallsubs(created_byB);
+        //finally performing the call
+        call.enqueue(new Callback<GetAllSubsRes>() {
+            @Override
+            public void onResponse(Call<GetAllSubsRes> call, Response<GetAllSubsRes> response) {
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+                assert response.body() != null;
+                if (!response.body().error) {
+                    Sessions.setUserObj(context, response.body(), Controller.Categories);
+                    RecyClPatch(response.body());
+                } else {
+                    Controller.Toasty(context, "Some error occurred...");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetAllSubsRes> call, Throwable t) {
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+                Controller.Toasty(context, t.getMessage());
+                Log.d("Err", t.getMessage());
+            }
+        });
+    }
+
+    private void RecyClPatch(GetAllSubsRes response) {
+
+        SubCatListAdapter adapter = new SubCatListAdapter(context, response.data);
+        adapter.setClickListener(this);
+        show_items_recycle.setAdapter(adapter);
+        show_items_recycle.setLayoutManager(new LinearLayoutManager(context));
+        show_items_recycle.setItemAnimator(new DefaultItemAnimator());
+    }
+
     private void reset() {
 
         categry_list.setSelection(0);
@@ -346,4 +420,9 @@ public class AddSubCategoryFragment extends Fragment implements View.OnClickList
     }
 
 
+    @Override
+    public void onItemClick(View view, GetAllSubsRes.Data data) {
+        Controller.Toasty(context, data.name + ": " + data.description);
+
+    }
 }

@@ -3,7 +3,6 @@ package com.makein.app.ServerHit;
 import com.makein.app.Models.*;
 
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -101,9 +100,13 @@ public interface Api {
     Call<MyResponse> getallprodsubs(@Part("created_by") RequestBody created_by);
 
     @Multipart
+    @POST("apis.php?apicall=getallsubs")
+    Call<GetAllSubsRes> getallsubs(@Part("prod_id") RequestBody prod_id);
+
+    @Multipart
     @POST("apis.php?apicall=getAllProdReqs")
     Call<MyReqsResponse> getAllProdReqs(@Part("user_id") RequestBody user_id,
-                                    @Part("deli_status") RequestBody deli_status);
+                                        @Part("deli_status") RequestBody deli_status);
 
     @Multipart
     @POST("apis.php?apicall=login")
@@ -113,6 +116,6 @@ public interface Api {
                          @Part("imeiNumber") RequestBody imeiNumber,
                          @Part("deviceName") RequestBody deviceName,
                          @Part("appVersion") RequestBody appVersion
-                         );
+    );
 
 }
