@@ -112,8 +112,7 @@ public class RequestsFragment extends Fragment implements ReqListAdapter.ItemCli
                     dialog.dismiss();
                 }
                 Controller.Toasty(context, t.getMessage());
-
-                Log.d("Err", t.getMessage());
+                Log.d("Err", t.getMessage() + "\n" + call.request());
             }
         });
     }

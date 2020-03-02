@@ -16,23 +16,32 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.loader.content.CursorLoader;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.makein.app.Models.MyResponse;
 import com.makein.app.R;
 import com.makein.app.ServerHit.Api;
 import com.makein.app.ServerHit.RetroCall;
+import com.makein.app.activities.HomeActivity;
+import com.makein.app.adapters.HomeListAdapter;
 import com.makein.app.controler.BitmapTransform;
 import com.makein.app.controler.Controller;
 import com.makein.app.controler.Sessions;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.Serializable;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -42,7 +51,7 @@ import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
 
-public class AddCategoryFragment extends Fragment implements View.OnClickListener {
+public class AddCategoryFragment extends Fragment implements View.OnClickListener, HomeListAdapter.ItemClickListener {
 
     Context context;
     EditText category_name, category_desc;
@@ -51,6 +60,10 @@ public class AddCategoryFragment extends Fragment implements View.OnClickListene
     Uri selectedImage = null;
     TextView toolarHead;
     private ProgressDialog dialog;
+    RecyclerView show_items_recycle;
+    FloatingActionButton floatingActionButton;
+    CardView add_layout_holder;
+    boolean showingEdit = true;
 
     public static AddCategoryFragment newInstance() {
         AddCategoryFragment fragment = new AddCategoryFragment();
@@ -68,32 +81,39 @@ public class AddCategoryFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.activity_add_categories, container, false);
         context = container.getContext();
-
         dialog = new ProgressDialog(context);
         dialog.setMessage("in Progress, please wait.");
 
 
         init(rootView);
+        rootView.findViewById(R.id.catigory_toolbar_header).setVisibility(View.GONE);
 
 
         return rootView;
     }
 
-//    RecyclerView sub_items_recycle;
-
+    //    RecyclerView sub_items_recycle;
     private void init(View rootView) {
+
+        show_items_recycle = (RecyclerView) rootView.findViewById(R.id.show_items_recycle);
 
         category_name = (EditText) rootView.findViewById(R.id.category_name);
         category_desc = (EditText) rootView.findViewById(R.id.category_desc);
         triggImgGet = (ImageView) rootView.findViewById(R.id.triggImgGet);
         selectedImg = (ImageView) rootView.findViewById(R.id.selectedImg);
+        add_layout_holder = (CardView) rootView.findViewById(R.id.add_layout_holder);
+        floatingActionButton = (FloatingActionButton) rootView.findViewById(R.id.floatingActionButton);
         btn_add = (Button) rootView.findViewById(R.id.btn_add);
 
 
         selectedImg.setOnClickListener(this);
         triggImgGet.setOnClickListener(this);
+        floatingActionButton.setOnClickListener(this);
         btn_add.setOnClickListener(this);
+        String userId = Sessions.getUserObject(context, Controller.userID);
+        GetAllProdSubs(userId);
     }
+
 
     @Override
     public void onClick(View view) {
@@ -113,6 +133,18 @@ public class AddCategoryFragment extends Fragment implements View.OnClickListene
                 if (selectedImage != null) {
                     Controller.popUpImg(context, selectedImage, "Selected Image", null, null, "URI");
                 }
+                break;
+            case R.id.floatingActionButton:
+                if (showingEdit) {
+                    floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.arrow_back));
+                    show_items_recycle.setVisibility(View.GONE);
+                    add_layout_holder.setVisibility(View.VISIBLE);
+                } else {
+                    floatingActionButton.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_white));
+                    show_items_recycle.setVisibility(View.VISIBLE);
+                    add_layout_holder.setVisibility(View.GONE);
+                }
+                showingEdit = !showingEdit;
                 break;
         }
     }
@@ -135,7 +167,7 @@ public class AddCategoryFragment extends Fragment implements View.OnClickListene
 
     }
 
-   private void setDataSave(Uri fileUri, String name, String desc) {
+    private void setDataSave(Uri fileUri, String name, String desc) {
         RequestBody requestFile = null;
         File file = null;
         //creating a file
@@ -190,6 +222,51 @@ public class AddCategoryFragment extends Fragment implements View.OnClickListene
         });
     }
 
+    private void RecyClPatch(MyResponse response) {
+
+        HomeListAdapter adapter = new HomeListAdapter(context, response.data);
+       // adapter.setClickListener(this);
+        show_items_recycle.setAdapter(adapter);
+        show_items_recycle.setLayoutManager(new LinearLayoutManager(context));
+        show_items_recycle.setItemAnimator(new DefaultItemAnimator());
+    }
+
+    private void GetAllProdSubs(String created_by) {
+        dialog.show();
+        //creating request body for file
+        RequestBody created_byB = RequestBody.create(MediaType.parse("text/plain"), created_by);
+        //creating our api
+        Api api = RetroCall.getClient();
+        //creating a call and calling the upload image method
+        Call<MyResponse> call = api.getallprodsubs(created_byB);
+        //finally performing the call
+        call.enqueue(new Callback<MyResponse>() {
+            @Override
+            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+                assert response.body() != null;
+                if (!response.body().error) {
+                    Sessions.setUserObj(context, response.body(), Controller.Categories);
+                    RecyClPatch(response.body());
+                } else {
+                    Controller.Toasty(context, "Some error occurred...");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MyResponse> call, Throwable t) {
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
+                Controller.Toasty(context, t.getMessage());
+
+                Log.d("Err", t.getMessage());
+            }
+        });
+    }
+
     /*
      * This method is fetching the absolute path of the image file
      * if you want to upload other kind of files like .pdf, .docx
@@ -205,6 +282,37 @@ public class AddCategoryFragment extends Fragment implements View.OnClickListene
         String result = cursor.getString(column_index);
         cursor.close();
         return result;
+    }
+
+
+    @Override
+    public void onItemClick(View view, MyResponse.Data data) {
+        Controller.Toasty(context, data.name + ": " + data.description);
+
+        Bundle bundle = new Bundle();
+        bundle.putString("From", data.name + "_" + data.id);
+        bundle.putSerializable("data_cls", (Serializable) data);
+        SetFrag(SubCategoryFragment.class, bundle);
+    }
+
+    private void SetFrag(Class fragmentClass, Bundle bundle) {
+        String backStateName = fragmentClass.getClass().getName();
+        String fragmentTag = backStateName;
+        HomeActivity.fragmentClass = fragmentClass;
+        Fragment fragment = null;
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        fragment.setArguments(bundle);
+        // Insert the fragment by replacing any existing fragment
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.fragmentParentViewGroup, fragment, fragmentTag)
+                .addToBackStack(backStateName)
+                .commit();
     }
 
 
