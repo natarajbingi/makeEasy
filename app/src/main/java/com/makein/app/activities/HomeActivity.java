@@ -80,11 +80,11 @@ public class HomeActivity extends AppCompatActivity
         leftMenuDesc.setText(Sessions.getUserObject(context, Controller.emailID));
 
 
-        MyResponse myResponse = (MyResponse) Sessions.getUserObj(context, Controller.Categories, MyResponse.class);
-        if (myResponse.data.get(0).name == null) {
-            String userId = Sessions.getUserObject(context, Controller.userID);
-            GetAllProdSubs(userId);
-        }
+//        MyResponse myResponse = (MyResponse) Sessions.getUserObj(context, Controller.Categories, MyResponse.class);
+//        if (myResponse.data.get(0).name == null) {
+        String userId = Sessions.getUserObject(context, Controller.userID);
+        GetAllProdSubs(userId);
+//        }
         try {
             int size = (int) Math.ceil(Math.sqrt(800 * 600));
             // Loads given image

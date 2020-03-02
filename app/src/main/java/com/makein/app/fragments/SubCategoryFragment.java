@@ -58,8 +58,12 @@ public class SubCategoryFragment extends Fragment {
 
         Map<String, String> arr = new LinkedHashMap<String, String>();
         arr.put("Select", "Select");
-        for (int i = 0; i < data.subProds.size(); i++) {
-            arr.put(data.subProds.get(i).name.toUpperCase(), data.subProds.get(i).id);
+        try {
+            for (int i = 0; i < data.subProds.size(); i++) {
+                arr.put(data.subProds.get(i).name.toUpperCase(), data.subProds.get(i).id);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         setSpinners(select_subcate, arr.keySet().toArray(new String[0]));
