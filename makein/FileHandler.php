@@ -253,7 +253,8 @@ class FileHandler
             $url = $server_ip = gethostbyname(gethostname());
             $empQuery = "UPDATE `users` SET  `createdby`='$createdby', `updated_datetime`=NOW(),`profile_img`='$profile_img' WHERE `id`='$id'";
         }
-        $absurl = 'http://' . gethostbyname(gethostname()) . '/makein' . UPLOAD_PATH . $profile_img;
+       // $absurl = 'http://' . gethostbyname(gethostname()) . '/makeasy' . UPLOAD_PATH . $profile_img; 
+       $absurl = 'http://snsproduction.com/makeasy' . UPLOAD_PATH . $profile_img;
         if (mysqli_query($this->con, $empQuery))
             return $absurl;
         return "";
@@ -332,7 +333,7 @@ class FileHandler
         while ($stmt->fetch()) {
 
             $temp = array();
-            $absurl = 'http://' . gethostbyname(gethostname()) . '/makein' . UPLOAD_PATH . $img_url;
+            $absurl = 'http://snsproduction.com/makeasy' . UPLOAD_PATH . $img_url;
             $temp['id'] = $id;
             $temp['name'] = $name;
             $temp['description'] = $description;
@@ -393,7 +394,7 @@ class FileHandler
         $profile = array();
         while ($stmt->fetch()) {
             $temp = array();
-            $absurl = 'http://' . gethostbyname(gethostname()) . '/makein' . UPLOAD_PATH . $profile_img;
+            $absurl = 'http://snsproduction.com/makeasy' . UPLOAD_PATH . $profile_img;
             $temp['id'] = $id;
             $temp['first_name'] = $first_name;
             $temp['last_name'] = $last_name;
@@ -564,7 +565,7 @@ class FileHandler
         $imgArray = array();
         for ($x = 0; $x < count($imgUrl); $x++) {
             // $absurl = 'http://' . gethostbyname(gethostname()) . '/makein' . UPLOAD_PATH . $imgUrl[$x];
-            $absurl = 'http://' . gethostbyname(gethostname()) . '/makeasy' . UPLOAD_PATH . $imgUrl[$x];
+            $absurl = 'http://snsproduction.com/makeasy' . UPLOAD_PATH . $imgUrl[$x];
             array_push($imgArray, $absurl);
         }
 

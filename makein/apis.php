@@ -323,7 +323,8 @@ if (isset($_GET['apicall'])) {
         /*11 getallsubs*/
         case oneight:
             $upload = new FileHandler();
-            $res = $upload->getAllSubProds(0);
+            $prod_id = $_POST["prod_id"];
+            $res = $upload->getAllSubProds($prod_id);
             $response['error'] = !count($res) > 0;
             $response['data'] = $res;
             $response['message'] = count($res) > 0 ? "product and sub product details " : " No product or sub product added  yet.";
