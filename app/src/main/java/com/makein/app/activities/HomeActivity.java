@@ -144,7 +144,7 @@ public class HomeActivity extends AppCompatActivity
             break;
             case R.id.nav_category: {
                 if (fragmentClass != AddCategoryFragment.class) {
-                    toolbar.setTitle("Add Category");
+                    toolbar.setTitle("Add Category_admin");
                     fragmentClass = AddCategoryFragment.class;
                     SetFrag(fragmentClass);
                 }
